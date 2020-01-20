@@ -28,7 +28,7 @@ class Seminar:
     login = WebDriverWait(self.driver, 10).until(
       EC.presence_of_element_located((By.ID, "js-google-sign-in"))
     )
-    # Wait for JavaScript to load
+    # Wait for Javascript to load
     time.sleep(2)
     login.click()
 
@@ -37,8 +37,8 @@ class Seminar:
     handles = self.driver.window_handles
     self.driver.switch_to.window(handles[1])
 
-    locator_email = "Email" if self.opts.headless else "identifierId"
     # Wait until the login window has loaded, select email
+    locator_email = "Email" if self.opts.headless else "identifierId"
     email = WebDriverWait(self.driver, 5).until(
       EC.presence_of_element_located((By.ID, locator_email))
     )
@@ -116,7 +116,6 @@ class Seminar:
     date_picker_field.send_keys(Keys.RETURN)
     self.class_edit_updated()
 
-
     # Class hour picker: test = 5
     print('Hours')
     parent_locator_time_hour = "//select[@class='date' and @name='hour']"
@@ -144,8 +143,7 @@ class Seminar:
     time.sleep(3)
     WebDriverWait(self.driver, 10).until(EC.element_selection_state_to_be(am_pm_choice, True))
 
-    # Finding professor
-    # Click to select professor box
+    # Click professor field
     time.sleep(5)
     print('Picking professor')
     professor_disp_field = self.driver.find_element_by_css_selector("span.select2-selection__arrow")
@@ -178,7 +176,7 @@ class Seminar:
 
     # Click button to publish class
     print('Publishing class')
-    publish_button = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.publish-class"))).click()
+    WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.publish-class"))).click()
     return self.driver.current_url
 
 
@@ -186,3 +184,4 @@ client = Seminar()
 client.sign_in()
 client.create_new_classroom()
 
+# TODO: Figure out how to work with CSV file
