@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 import time
-from data_handle import data, StudentData
+from data_handle import *
 from env import email_address, pwd
 
 
@@ -108,7 +108,6 @@ class Seminar:
         print(f"Entered session name: {session_name}")
         self.class_edit_updated()
 
-
         # Class date
         date_picker_field = self.driver.find_element_by_xpath("//input[contains(@class, 'hasDatepicker')]")
         self.driver.execute_script("arguments[0].value = ''", date_picker_field)
@@ -116,7 +115,6 @@ class Seminar:
         date_picker_field.send_keys(Keys.RETURN)
         print(f'Picking date {student_data.day}')
         self.class_edit_updated()
-
 
         # Class hour picker
         parent_locator_time_hour = "//select[@class='date' and @name='hour']"
@@ -171,28 +169,30 @@ class Seminar:
         WebDriverWait(self.driver, 5).until(
             EC.presence_of_element_located((By.XPATH, f"{parent_locator_student}//li[contains(@class, 'select2-results__option') and contains(text(), '{student_data.email}')]"))
         ).click()
+        print(f"Selected {student_data.name}")
         
-
         # Enable recording
         print('Check recording')
         self.driver.find_element_by_xpath("//div[@class='form-wrapper is-record-wrapper']//input").click()
 
         # Click button to publish class
-        print('Publishing class')
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.publish-class"))).click()
+        print('Published class')
+
         return self.driver.current_url
 
 
 if __name__ == "__main__":
     client = Seminar(headless=True)
     client.sign_in()
-    class_urls = []
     for row in range(data.shape[0]):
-        # course_name, prof_name, prof_email, student_data=None
         curr_data = StudentData(data.iloc[row])
         url = client.create_new_classroom(course_name="CS111B",
                                     prof_name="Tambasco",
                                     prof_email="ltambasco@minerva.kgi.edu",
                                     student_data=curr_data)
-        class_urls.append(url)
-    print(class_urls)
+        # Save the class URL back to the CSV
+        data.at[row, class_url] = "https://seminar.minerva.kgi.edu/app/classes/" + url.split('/')[-1]
+    # Export CSV to current directory
+    data.to_csv(r'./result.csv')
+        
