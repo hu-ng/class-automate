@@ -5,9 +5,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
-import time
 from data_handle import *
 from env import email_address, pwd
+import time
+import sys
 
 
 class Seminar:
@@ -183,6 +184,10 @@ class Seminar:
 
 
 if __name__ == "__main__":
+    data = pd.read_csv(sys.argv[1])
+    class_url = "Class URL"
+    data[class_url] = data[class_url].astype(str)
+
     client = Seminar(headless=True)
     client.sign_in()
     for row in range(data.shape[0]):

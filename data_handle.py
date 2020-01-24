@@ -6,10 +6,6 @@ from datetime import time as time_obj
 # Time in isoformat: HH:MM:SS
 # NO SPACES
 
-data = pd.read_csv('test.csv')
-class_url = "Class URL"
-data[class_url] = data[class_url].astype(str)
-
 class StudentData:
     def __init__(self, row_data):
         self.name = row_data["Student Name"]
