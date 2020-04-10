@@ -9,6 +9,7 @@ from data_handle import *
 from env import email_address, pwd
 import time
 import sys
+from bs4 import BeautifulSoup
 
 
 class Seminar:
@@ -19,7 +20,7 @@ class Seminar:
         self.opts = Options()
         self.opts.headless = headless
         self.opts.add_argument("--enable-automation")
-        self.opts.add_argument("--window-size=1900x900")
+        self.opts.add_argument("--window-size=1920x1080")
         self.driver = Chrome(options=self.opts)
 
 
@@ -54,7 +55,8 @@ class Seminar:
         self.driver.find_element_by_id(locator_next).click()
 
         # Find password
-        locator_pwd = "Passwd" if self.opts.headless else "password"
+        # locator_pwd = "Passwd" if self.opts.headless else "password"
+        locator_pwd = "password"
         if self.opts.headless:
             password = self.driver.find_element_by_id(locator_pwd)
         else:
@@ -69,7 +71,7 @@ class Seminar:
 
         # Sign In
         print("Signing in...")
-        locator_signin = "signIn" if self.opts.headless else "passwordNext"
+        locator_signin = "submit" if self.opts.headless else "passwordNext"
         self.driver.find_element_by_id(locator_signin).click()
 
         # You're in Seminar!
@@ -166,7 +168,6 @@ class Seminar:
         student_search_field = WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.XPATH, f"{parent_locator_student}//input")))
         student_search_field.click()
         student_search_field.send_keys(student_data.name)
-        print(f"{parent_locator_student}//li[contains(@class, 'select2-results__option') and contains(text(), '{student_data.email}')]")
         WebDriverWait(self.driver, 5).until(
             EC.presence_of_element_located((By.XPATH, f"{parent_locator_student}//li[contains(@class, 'select2-results__option') and contains(text(), '{student_data.email}')]"))
         ).click()
