@@ -10,6 +10,5 @@ class StudentData:
     def __init__(self, row_data):
         self.name = row_data["Student Name"]
         self.day = date.fromisoformat(row_data["Day"]).strftime("%m/%d/%Y")
-        self.time = time_obj.fromisoformat(row_data["Time"].split(" ")[0])
-        self.am_pm = row_data["Time"].split(" ")[1].lower()
+        self.time = time_obj.fromisoformat(row_data["Time"])
         self.email = row_data["Student Email"]

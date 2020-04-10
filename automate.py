@@ -21,6 +21,7 @@ class Seminar:
         self.opts.headless = headless
         self.opts.add_argument("--enable-automation")
         self.opts.add_argument("--window-size=1920x1080")
+        self.opts.add_argument("log-level=3")
         self.driver = Chrome(options=self.opts)
 
 
@@ -122,9 +123,10 @@ class Seminar:
         # Class hour picker
         parent_locator_time_hour = "//select[@class='date' and @name='hour']"
         self.driver.find_element_by_xpath(f"{parent_locator_time_hour}").click()
-        hour_choice = self.driver.find_element_by_xpath(f"{parent_locator_time_hour}/option[@value='{student_data.time.hour}']")
+        hour_value = student_data.time.hour if 0 <= student_data.time.hour < 12 else student_data.time.hour - 12
+        hour_choice = self.driver.find_element_by_xpath(f"{parent_locator_time_hour}/option[@value='{hour_value}']")
         hour_choice.click()
-        time.sleep(3)
+        time.sleep(2)
         WebDriverWait(self.driver, 10).until(EC.element_selection_state_to_be(hour_choice, True))
 
         # Class minute picker
@@ -132,20 +134,21 @@ class Seminar:
         self.driver.find_element_by_xpath(f"{parent_locator_time_minute}").click()
         minute_choice = self.driver.find_element_by_xpath(f"{parent_locator_time_minute}/option[@value='{student_data.time.minute}']")
         minute_choice.click()
-        time.sleep(3)
+        time.sleep(2)
         WebDriverWait(self.driver, 10).until(EC.element_selection_state_to_be(minute_choice, True))
 
         # Class AM/PM picker
         parent_locator_time_am_pm = "//select[@class='date' and @name='am-pm']"
         self.driver.find_element_by_xpath(f"{parent_locator_time_am_pm}").click()
-        am_pm_choice = self.driver.find_element_by_xpath(f"{parent_locator_time_am_pm}/option[@value='{student_data.am_pm}']")
+        am_pm_value = "am" if 0 <= student_data.time.hour < 12 else "pm"
+        am_pm_choice = self.driver.find_element_by_xpath(f"{parent_locator_time_am_pm}/option[@value='{am_pm_value}']")
         am_pm_choice.click()
-        time.sleep(3)
+        time.sleep(2)
         WebDriverWait(self.driver, 10).until(EC.element_selection_state_to_be(am_pm_choice, True))
-        print(f"Class time: {student_data.time} {student_data.am_pm}")
+        print(f"Class time: {student_data.time}")
 
         # Click professor field
-        time.sleep(5)
+        time.sleep(3)
         print('Picking professor')
         professor_disp_field = self.driver.find_element_by_css_selector("span.select2-selection__arrow")
         actions = ActionChains(self.driver)
