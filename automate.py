@@ -123,7 +123,7 @@ class Seminar:
         # Class hour picker
         parent_locator_time_hour = "//select[@class='date' and @name='hour']"
         self.driver.find_element_by_xpath(f"{parent_locator_time_hour}").click()
-        hour_value = student_data.time.hour if 0 <= student_data.time.hour < 12 else student_data.time.hour - 12
+        hour_value = student_data.time.hour if 0 < student_data.time.hour < 13 else student_data.time.hour - 12
         hour_choice = self.driver.find_element_by_xpath(f"{parent_locator_time_hour}/option[@value='{hour_value}']")
         hour_choice.click()
         time.sleep(2)
@@ -140,7 +140,7 @@ class Seminar:
         # Class AM/PM picker
         parent_locator_time_am_pm = "//select[@class='date' and @name='am-pm']"
         self.driver.find_element_by_xpath(f"{parent_locator_time_am_pm}").click()
-        am_pm_value = "am" if 0 <= student_data.time.hour < 12 else "pm"
+        am_pm_value = "am" if 0 < student_data.time.hour < 12 else "pm"
         am_pm_choice = self.driver.find_element_by_xpath(f"{parent_locator_time_am_pm}/option[@value='{am_pm_value}']")
         am_pm_choice.click()
         time.sleep(2)
@@ -183,6 +183,7 @@ class Seminar:
         # Click button to publish class
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.publish-class"))).click()
         print('Published class')
+        time.sleep(2)
 
         return self.driver.current_url
 
@@ -196,10 +197,14 @@ if __name__ == "__main__":
     client.sign_in()
     for row in range(data.shape[0]):
         curr_data = StudentData(data.iloc[row])
-        url = client.create_new_classroom(course_name="CS111B",
-                                    prof_name="Tambasco",
-                                    prof_email="ltambasco@minerva.kgi.edu",
-                                    student_data=curr_data)
+        # If an error occurs, export current data to result
+        try:
+            url = client.create_new_classroom(course_name="CS111B",
+                                        prof_name="Tambasco",
+                                        prof_email="ltambasco@minerva.kgi.edu",
+                                        student_data=curr_data)
+        except:
+            data.to_csv(r'./result.csv')
         # Save the class URL back to the CSV
         data.at[row, class_url] = "https://seminar.minerva.kgi.edu/app/classes/" + url.split('/')[-1]
     # Export CSV to current directory
